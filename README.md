@@ -51,6 +51,6 @@ A prototype decentralized insurance pool where:
 ## Installation & Testing
 
 ```bash
-git clone https://github.com/yourusername/protection-pool.git
+git clone https://github.com/stepanovnikita95-tech/Solidity-Insurance-Pool
 cd protection-pool
 npm install
