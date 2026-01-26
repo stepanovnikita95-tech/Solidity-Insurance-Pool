@@ -145,7 +145,6 @@ contract InsurancePool is Ownable, ReentrancyGuard, Pausable {
         (bool success,) = treasury.call{value: protocolFee}("");
         require(success, TransferFailed());
 
-        
         policyId = policyNFT.mint(msg.sender);
 
         policies[policyId] = PolicyData({

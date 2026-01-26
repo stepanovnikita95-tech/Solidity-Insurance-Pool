@@ -45,8 +45,10 @@ A prototype decentralized insurance pool where:
 - ReentrancyGuard + Pausable  
   → Protection against reentrancy and emergency pause
 
-- All tests in one file (for now)  
+- Mian tests in one file   
   → >90% coverage of success paths, reverts, and edge cases
+  → scripts for running tests separately
+  → Reverts check tests for low-level calls
 
 ## Installation & Testing
 
@@ -55,3 +57,11 @@ git clone https://github.com/stepanovnikita95-tech/Solidity-Insurance-Pool
 cd protection-pool
 npm install
 npx hardhat test
+npm run test:deposit
+npm run test:withdraw
+npm run test:emergency
+npm run test:buy
+npm run test:resolve
+npm run test:expire
+npm run test:upgreat
+npm run test:treasury
