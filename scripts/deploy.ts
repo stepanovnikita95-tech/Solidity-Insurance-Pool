@@ -10,7 +10,7 @@ async function main() {
 
     console.log("Deploying contracts with account:", deployer.address);
     console.log("Balance:", ethers.formatEther(
-        await ethers.provider.getBalance(deployer.address)
+    await ethers.provider.getBalance(deployer.address)
     ));
 
     // =============================

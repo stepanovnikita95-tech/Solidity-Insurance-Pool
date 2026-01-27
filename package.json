@@ -2,17 +2,16 @@
   "name": "ProtectionPool",
   "version": "1.0.0",
   "scripts": {
-  "test:deploy": "hardhat test \"test/InsurancePool/deploy-test.ts\"",
-  "test:deposit": "hardhat test \"test/InsurancePool/Deposit-test.ts\"",
-  "test:withdrawal": "hardhat test \"test/InsurancePool/Withdraw-test.ts\"",
-  "test:emergency": "hardhat test \"test/InsurancePool/EmergencyWithdraw-test.ts\"",
-  "test:buy": "hardhat test \"test/InsurancePool/BuyPolicy-test.ts\"",
-  "test:resolve": "hardhat test \"test/InsurancePool/EmergencyWithdraw-test.ts\"",
-  "test:expire": "hardhat test \"test/InsurancePool/ExpirePolicy-test.ts\"",
-  "test:upgreat": "hardhat test \"test/InsurancePool/UpgreatParametrs-test.ts\"",
-  "test:treasury": "hardhat test \"test/InsurancePool/Treasury-test.ts\"",
-  
-  "test:ci": "hardhat test --parallel"
+    "test:deploy": "hardhat test \"test/InsurancePool/deploy-test.ts\"",
+    "test:deposit": "hardhat test \"test/InsurancePool/Deposit-test.ts\"",
+    "test:withdrawal": "hardhat test \"test/InsurancePool/Withdraw-test.ts\"",
+    "test:emergency": "hardhat test \"test/InsurancePool/EmergencyWithdraw-test.ts\"",
+    "test:buy": "hardhat test \"test/InsurancePool/BuyPolicy-test.ts\"",
+    "test:resolve": "hardhat test \"test/InsurancePool/EmergencyWithdraw-test.ts\"",
+    "test:expire": "hardhat test \"test/InsurancePool/ExpirePolicy-test.ts\"",
+    "test:upgreat": "hardhat test \"test/InsurancePool/UpgreatParametrs-test.ts\"",
+    "test:treasury": "hardhat test \"test/InsurancePool/Treasury-test.ts\"",
+    "test:ci": "hardhat test --parallel"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.1.0",
@@ -37,6 +36,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^5.4.0"
+    "@openzeppelin/contracts": "^5.4.0",
+    "dotenv": "^17.2.3"
   }
 }
