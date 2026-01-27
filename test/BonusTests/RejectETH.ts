@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { deployFixture } from "./deploy-test";
+import { deployFixture } from "./deploy-rejectETH-test";
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 import { InsurancePool, PolicyNFT } from "@typechain-types/contracts";
 import { RejectTransfer } from "@typechain-types/contracts/RejectTransf.sol"

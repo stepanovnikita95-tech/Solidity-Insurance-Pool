@@ -76,10 +76,6 @@ import {
             it("policyId matches minted NFT tokenId",async function() {
                 expect(await policyNFT.ownerOf(policyId)).to.eq(user1.address);
             })
-            it("Reverts if called not from InsurancePool", async function() {
-                await expect(policyNFT.connect(user1).mint(user1.address))
-                    .to.be.revertedWithCustomError(policyNFT, "NotInsurancePool");
-            })
             it("PolicyId appears in buyer policy list", async function() {
                 const ids = await policyNFT.policiesOfOwner(user1.address)
                 expect(ids.length).to.eq(1);
@@ -196,7 +192,7 @@ import {
                 await expect(pool.connect(user1).buyPolicy(0n, 60n))
                     .to.be.revertedWithCustomError(pool, "ZeroValue"); 
             })
-            it("Revert if duration is zero or more than MAX duration", async function() {
+            it("Reverts if duration is zero or more than MAX duration", async function() {
                 await expect(pool.connect(user1).buyPolicy(100n, 0n))
                     .to.be.revertedWithCustomError(pool, "DurationOutOfRange");
                 const requiredDuration = 100 * 24 * 60 * 60;
@@ -213,7 +209,7 @@ import {
                         7 * 24 * 60 * 60,
                         { value: premium })).to.be.revertedWithCustomError(pool, "CoverageLimitExceeded");
             });
-            it("Revert if incorrect premium", async function() {
+            it("Reverts if incorrect premium", async function() {
                 const available = await pool.availableLiquidity();
                 const coverage = (available * (await pool.maxCoverageBps())) / 10_000n;
                 const premiumLessThanRequired = coverage * await pool.premiumRateBps() / 10_000n - 1n;
@@ -223,7 +219,7 @@ import {
                         7 * 24 * 60 * 60,
                         { value: premiumLessThanRequired })).to.be.revertedWithCustomError(pool, "WrongPremium");
             })
-            it("Revert when contract is paused", async function() {
+            it("Reverts when contract is paused", async function() {
                 await pool.pause();
                 const coverage = ethers.parseEther("10");
 
@@ -232,6 +228,10 @@ import {
                         7 * 24 * 60 * 60,
                         { value: premium}))
                     .to.be.revertedWithCustomError(pool,"EnforcedPause");
+            })
+            it("Reverts if called not from InsurancePool", async function() {
+                await expect(policyNFT.connect(user1).mint(user1.address))
+                    .to.be.revertedWithCustomError(policyNFT, "NotInsurancePool");
             })
             it("Invariants after buy policy", async function() {
                 const totalSharesBefore = await pool.totalShares();

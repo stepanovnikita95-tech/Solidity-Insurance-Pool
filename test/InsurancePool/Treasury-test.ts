@@ -19,7 +19,7 @@ import {
         let fee: bigint;
         beforeEach(async function() {
             ({pool,policyNFT, treasury, user1} = await deployFixture());
-            await pool.connect(user1).deposit({value: ethers.parseEther("100")});
+            await pool.connect(user1).deposit({value: ethers.parseEther("10")});
         
             await policyNFT.setInsurancePool(pool.target);
             

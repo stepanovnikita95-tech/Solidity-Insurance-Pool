@@ -105,7 +105,7 @@ import { InsurancePool } from "@typechain-types/contracts";
                 await expect(pool.connect(user1).withdrawal(withdrawAmout))
                     .to.be.revertedWithCustomError(pool, "NoLiquidity")
             })
-            it("Reverts withdraw when paused", async function() {
+            it("NOT Reverts withdraw when paused", async function() {
                 await pool.pause();
                 await expect(pool.connect(user1).withdrawal(ethers.parseEther("1")))
                     .to.be.not.reverted;
