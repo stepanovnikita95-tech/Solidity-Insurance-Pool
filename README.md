@@ -59,18 +59,22 @@ Network: Sepolia
 
 → PolicyNFT deployed to: 0x231dC00765985aB852D5d623F901bC9BF9eCb4A6
 Contract verification: https://repo.sourcify.dev/contracts/full_match/11155111/0x231dC00765985aB852D5d623F901bC9BF9eCb4A6/
+
 Etherscan: https://sepolia.etherscan.io/address/0x231dC00765985aB852D5d623F901bC9BF9eCb4A6#code
 
 → Treasury deployed to: 0xC28c9408fE94ea98cD4976Fa04382C480A5d272E
 Contract verification: https://repo.sourcify.dev/contracts/full_match/11155111/0xC28c9408fE94ea98cD4976Fa04382C480A5d272E/
+
 Etherscan: https://sepolia.etherscan.io/address/0xC28c9408fE94ea98cD4976Fa04382C480A5d272E#code
 
 → Oracle deployed to: 0x5EaF2673a0124e39b65eFf406C7E83aB155a09C8
 Contract verification: https://repo.sourcify.dev/contracts/full_match/11155111/0x5EaF2673a0124e39b65eFf406C7E83aB155a09C8/
+
 Etherscan: https://sepolia.etherscan.io/address/0x5EaF2673a0124e39b65eFf406C7E83aB155a09C8#code
 
 → InsurancePool deployed to: 0xCd3F58808a942247fe8848EBcf4f59fa29e3a9b5
 Contract verification: https://repo.sourcify.dev/contracts/full_match/11155111/0xCd3F58808a942247fe8848EBcf4f59fa29e3a9b5/
+
 Etherscan: https://sepolia.etherscan.io/address/0xCd3F58808a942247fe8848EBcf4f59fa29e3a9b5#code
 
 → PolicyNFT linked to InsurancePool
