@@ -27,5 +27,5 @@ const config: HardhatUserConfig = {
     enabled: true,
   },
 }
-
+require("solidity-coverage");
 export default config;

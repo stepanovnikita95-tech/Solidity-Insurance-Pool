@@ -2,6 +2,7 @@
   "name": "ProtectionPool",
   "version": "1.0.0",
   "scripts": {
+    "test": "hardhat test",
     "test:deploy": "hardhat test \"test/InsurancePool/deploy-test.ts\"",
     "test:deposit": "hardhat test \"test/InsurancePool/Deposit-test.ts\"",
     "test:withdrawal": "hardhat test \"test/InsurancePool/Withdraw-test.ts\"",
