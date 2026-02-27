@@ -11,14 +11,13 @@ contract PolicyNFT is ERC721Enumerable, Ownable {
     error NotInsurancePool();
     error ZeroAddress();
 
-    constructor(address initialOwner) 
-        ERC721("Insurance Policy NFT", "PLC") Ownable(initialOwner) {}
+    constructor(address initialOwner) ERC721("Insurance Policy NFT", "PLC") Ownable(initialOwner) {}
 
     modifier onlyInsurancePool() {
         if (msg.sender != insurancePool) revert NotInsurancePool();
         _;
     }
-    
+
     function setInsurancePool(address _pool) external onlyOwner {
         if (_pool == address(0)) revert ZeroAddress();
         insurancePool = _pool;

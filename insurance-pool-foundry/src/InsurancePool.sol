@@ -22,9 +22,9 @@ contract InsurancePool is Ownable, ReentrancyGuard, Pausable {
     uint256 public constant BPS = 10_000; // BASIS_POINTS
     uint256 public constant MAX_DURATION = 30 days;
 
-    uint256 public maxCoverageBps; // % от пула // maxCoveragePerPolicy = 2000 (20%) 
-    uint256 public premiumRateBps;          // в bps // premiumRate = 300 (3%)
-    uint256 public protocolFeeBps;          // в bps // protocolFee = 500 (5%)
+    uint256 public maxCoverageBps; // % от пула // maxCoveragePerPolicy = 2000 (20%)
+    uint256 public premiumRateBps; // в bps // premiumRate = 300 (3%)
+    uint256 public protocolFeeBps; // в bps // protocolFee = 500 (5%)
 
     mapping(address => uint256) public sharesOf;
     mapping(uint256 => PolicyData) public policies;
@@ -49,29 +49,27 @@ contract InsurancePool is Ownable, ReentrancyGuard, Pausable {
     error AlreadyResolved();
     error PolicyNotExpired();
     error TransferFailed();
-    
+
     // Events
     event LiquidityProvided(address indexed provider, uint256 ethAmount, uint256 shares);
     event LiquidityRemoved(address indexed provider, uint256 ethAmount, uint256 shares);
     event PolicyCreated(address indexed buyer, uint256 indexed policyId, uint256 coverage, uint256 premium);
     event PolicyResolved(uint256 indexed policyId, bool paid, uint256 payoutAmount);
     event ParametersUpdated(uint256 maxCoverageBps, uint256 premiumRateBps, uint256 protocolFeeBps);
-    
+
     constructor(
-        address initialOwner, 
-        address _policyNFT, 
-        address _oracle, 
-        address _treasury, 
-        uint256 _maxCoverageBps, 
-        uint256 _premiumRateBps, 
+        address initialOwner,
+        address _policyNFT,
+        address _oracle,
+        address _treasury,
+        uint256 _maxCoverageBps,
+        uint256 _premiumRateBps,
         uint256 _protocolFeeBps
-        ) 
-        Ownable (initialOwner) 
-        {
+    ) Ownable(initialOwner) {
         require(_policyNFT != address(0), ZeroAddress());
         require(_oracle != address(0), ZeroAddress());
         require(_treasury != address(0), ZeroAddress());
-        
+
         policyNFT = IPolicyNFT(_policyNFT);
         oracle = IOracle(_oracle);
         treasury = _treasury;
@@ -84,20 +82,19 @@ contract InsurancePool is Ownable, ReentrancyGuard, Pausable {
     // === LP functions ===
 
     /// @notice Provide liquidity
-    function deposit() external payable whenNotPaused nonReentrant{
+    function deposit() external payable whenNotPaused nonReentrant {
         require(msg.value > 0, ZeroValue());
         require(msg.value >= 0.001 ether, AmountNotEnough());
 
         uint256 shareToMint;
 
-        if (totalShares == 0) { 
+        if (totalShares == 0) {
             shareToMint = msg.value;
-        }
-        else {
+        } else {
             uint256 assetsBefore = totalAssets() - msg.value;
             shareToMint = (msg.value * totalShares) / assetsBefore;
         }
-        require (shareToMint > 0, ZeroValue());
+        require(shareToMint > 0, ZeroValue());
         totalShares += shareToMint;
         sharesOf[msg.sender] += shareToMint;
 
@@ -105,14 +102,14 @@ contract InsurancePool is Ownable, ReentrancyGuard, Pausable {
     }
 
     /// @notice Withdraw liquidity
-    function withdrawal(uint256 amount) external nonReentrant{
+    function withdrawal(uint256 amount) external nonReentrant {
         require(amount > 0, ZeroValue());
 
         uint256 userShares = sharesOf[msg.sender];
         require(amount <= userShares, NoLiquidity());
-        
+
         uint256 ethAmount = (amount * totalAssets()) / totalShares;
-        require(ethAmount <= address(this).balance, NoLiquidity());        
+        require(ethAmount <= address(this).balance, NoLiquidity());
         sharesOf[msg.sender] = userShares - amount;
         totalShares -= amount;
 
@@ -125,18 +122,20 @@ contract InsurancePool is Ownable, ReentrancyGuard, Pausable {
     // === Purchase and resolve policy ===
 
     /// @notice Buy a coverage policy for a duration of seconds
-    function buyPolicy(uint256 coverageAmount, uint256 duration) 
-        external payable 
-        whenNotPaused nonReentrant 
-        returns (uint256 policyId) {
-        
-        require(coverageAmount > 0 , ZeroValue());
+    function buyPolicy(uint256 coverageAmount, uint256 duration)
+        external
+        payable
+        whenNotPaused
+        nonReentrant
+        returns (uint256 policyId)
+    {
+        require(coverageAmount > 0, ZeroValue());
         require(duration > 0 && duration <= MAX_DURATION, DurationOutOfRange());
-        
-        uint256  freeLiquidity = availableLiquidity();
+
+        uint256 freeLiquidity = availableLiquidity();
         uint256 maxCoverageAllowed = (freeLiquidity * maxCoverageBps) / BPS;
         require(coverageAmount <= maxCoverageAllowed, CoverageLimitExceeded());
-        
+
         uint256 premiumRequired = (coverageAmount * premiumRateBps) / BPS;
         require(msg.value == premiumRequired, WrongPremium());
 
@@ -153,34 +152,34 @@ contract InsurancePool is Ownable, ReentrancyGuard, Pausable {
             start: block.timestamp,
             end: block.timestamp + duration,
             resolved: false
-        }); 
+        });
 
-        totalLockedCoverage += coverageAmount; 
+        totalLockedCoverage += coverageAmount;
 
         emit PolicyCreated(msg.sender, policyId, coverageAmount, premiumRequired);
     }
-    
-    function resolvePolicy(uint256 policyId) external onlyOwner nonReentrant{
+
+    function resolvePolicy(uint256 policyId) external onlyOwner nonReentrant {
         PolicyData storage policy = policies[policyId];
         require(policy.coverage > 0, PolicyNotFound());
         require(!policy.resolved, AlreadyResolved());
 
         policy.resolved = true;
         totalLockedCoverage -= policy.coverage;
-        
+
         bool eventHappened = oracle.isEventHappened(policyId);
 
-        if (eventHappened){
+        if (eventHappened) {
             address payoutReceiver = policyNFT.ownerOf(policyId);
 
-            (bool success,) =  payable(payoutReceiver).call{value: policy.coverage}("");
-            require (success, TransferFailed());
+            (bool success,) = payable(payoutReceiver).call{value: policy.coverage}("");
+            require(success, TransferFailed());
             emit PolicyResolved(policyId, eventHappened, policy.coverage);
-        } else { 
+        } else {
             emit PolicyResolved(policyId, false, 0);
         }
     }
-    
+
     /// @notice Release liquidity on an expired policy (if not resolved earlier)
     function expirePolicy(uint256 policyId) external onlyOwner nonReentrant {
         PolicyData storage policy = policies[policyId];
@@ -198,41 +197,49 @@ contract InsurancePool is Ownable, ReentrancyGuard, Pausable {
     function totalAssets() public view returns (uint256) {
         return address(this).balance;
     }
+
     function availableLiquidity() public view returns (uint256) {
-        return (address(this).balance-totalLockedCoverage);
+        return (address(this).balance - totalLockedCoverage);
     }
+
     function sharedBalance(address user) external view returns (uint256) {
         return sharesOf[user];
     }
-    function ethBalance(address user) external view returns (uint256) { 
-        if(totalShares == 0) { return 0;}
-        return sharesOf[user] * totalAssets() / totalShares; 
+
+    function ethBalance(address user) external view returns (uint256) {
+        if (totalShares == 0) return 0;
+        return sharesOf[user] * totalAssets() / totalShares;
     }
-    
+
     // === Control (owner) ===
-    function updateParameters(uint256  newMaxCoverageBps, uint256 newPremiumRateBps, uint256 newProtocolFeeBps) external onlyOwner {
+    function updateParameters(uint256 newMaxCoverageBps, uint256 newPremiumRateBps, uint256 newProtocolFeeBps)
+        external
+        onlyOwner
+    {
         require(newMaxCoverageBps > 0 && newMaxCoverageBps < BPS, InvalidBPS());
-        require(newPremiumRateBps > 0 && newPremiumRateBps < BPS , InvalidBPS());
+        require(newPremiumRateBps > 0 && newPremiumRateBps < BPS, InvalidBPS());
         require(newProtocolFeeBps > 0 && newProtocolFeeBps < BPS, InvalidBPS());
-        
+
         maxCoverageBps = newMaxCoverageBps;
         premiumRateBps = newPremiumRateBps;
         protocolFeeBps = newProtocolFeeBps;
 
         emit ParametersUpdated(newMaxCoverageBps, newPremiumRateBps, newProtocolFeeBps);
     }
+
     function pause() external onlyOwner {
         _pause();
     }
+
     function unpause() external onlyOwner {
         _unpause();
     }
+
     function emergencyWithdraw(address to, uint256 amount) external onlyOwner {
         require(to != address(0), ZeroAddress());
         require(amount > 0, ZeroValue());
-        (bool success, ) = payable(to).call{value: amount}("");
+        (bool success,) = payable(to).call{value: amount}("");
         require(success, TransferFailed());
     }
-
 }
 

@@ -13,7 +13,6 @@ contract DeployInsurancePool is Script {
     function run() external {
         vm.startBroadcast();
 
-
         address deployer = msg.sender;
         console.log("Deploying from: ", deployer);
 
@@ -26,15 +25,8 @@ contract DeployInsurancePool is Script {
         SimpleOracle oracle = new SimpleOracle(deployer);
         console.log("Oracle deployed at: ", address(oracle));
 
-        InsurancePool pool = new InsurancePool(
-            deployer,
-            address(nft),
-            address(oracle),
-            address(treasury),
-            2000,
-            300,
-            500
-        );
+        InsurancePool pool =
+            new InsurancePool(deployer, address(nft), address(oracle), address(treasury), 2000, 300, 500);
         console.log("InsurancePool deployed at: ", address(pool));
 
         nft.setInsurancePool(address(pool));

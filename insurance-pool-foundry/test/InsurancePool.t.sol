@@ -24,22 +24,13 @@ contract InsurancePoolTest is Test, ERC721Holder {
     event LiquidityProvided(address indexed provider, uint256 ethAmount, uint256 shares);
     event LiquidityRemoved(address indexed provider, uint256 ethAmount, uint256 shares);
 
- 
     function setUp() public {
         nft = new PolicyNFT(owner);
-        treasury = new Treasury(owner); 
+        treasury = new Treasury(owner);
         oracle = new SimpleOracle(owner);
         attacker = new ReentrancyAttacker(user1);
 
-        pool = new InsurancePool(
-            owner,
-            address(nft),
-            address(oracle),
-            address(treasury),
-            2000,
-            300,
-            500
-        );
+        pool = new InsurancePool(owner, address(nft), address(oracle), address(treasury), 2000, 300, 500);
         nft.setInsurancePool(address(pool));
 
         vm.deal(user1, 1000 ether);
@@ -53,20 +44,21 @@ contract InsurancePoolTest is Test, ERC721Holder {
     function test_Deposit() public {
         vm.startPrank(user1);
         vm.expectEmit(true, true, true, false);
-        emit LiquidityProvided(address(user1), 50 ether, 50 ether );
+        emit LiquidityProvided(address(user1), 50 ether, 50 ether);
         pool.deposit{value: 50 ether}();
         uint256 share1 = pool.sharesOf(user1);
         assertEq(share1, 50 ether);
         vm.stopPrank();
-        
+
         vm.startPrank(user2);
         vm.expectEmit(true, true, true, false);
-        emit LiquidityProvided(address(user2), 20 ether, 20 ether );
+        emit LiquidityProvided(address(user2), 20 ether, 20 ether);
         pool.deposit{value: 20 ether}();
         uint256 share2 = pool.sharesOf(user2);
         assertEq(share2, 20 ether);
         vm.stopPrank();
     }
+
     function testFuzz_DepositMultiple(uint256 amount1, uint256 amount2) public {
         vm.assume(amount1 >= 0.001 ether && amount1 < 100 ether);
         vm.assume(amount2 >= 0.001 ether && amount2 < 100 ether);
@@ -103,16 +95,17 @@ contract InsurancePoolTest is Test, ERC721Holder {
     function test_Withdrawal() public {
         uint256 depAmount = 50 ether;
         uint256 wthdrAmount = 20 ether;
-        
+
         vm.startPrank(user1);
         pool.deposit{value: depAmount}();
-        
+
         vm.expectEmit(true, true, true, false);
         emit LiquidityRemoved(address(user1), 30 ether, 20 ether);
         pool.withdrawal(wthdrAmount);
         assertEq((depAmount - wthdrAmount), pool.sharesOf(user1));
         vm.stopPrank();
     }
+
     function test_Fuzzing_Withdrawal(uint256 amount) public {
         uint256 depAmount = 70 ether;
         vm.assume(amount > 0 && amount <= 70 ether);
@@ -121,7 +114,7 @@ contract InsurancePoolTest is Test, ERC721Holder {
         pool.withdrawal(amount);
         assertEq(depAmount - amount, pool.sharesOf(user1));
         vm.stopPrank();
-    } 
+    }
 
     function test_Revert_DepositAmountZero() public {
         vm.startPrank(user1);
@@ -129,12 +122,14 @@ contract InsurancePoolTest is Test, ERC721Holder {
         pool.deposit{value: 0}();
         vm.stopPrank();
     }
+
     function test_Revert_DepositAmountNotEnough() public {
         vm.startPrank(user1);
         vm.expectRevert(InsurancePool.AmountNotEnough.selector);
         pool.deposit{value: 0.00001 ether}();
         vm.stopPrank();
     }
+
     function test_Revert_WithdrawAmountZero() public {
         vm.startPrank(user1);
         pool.deposit{value: 50 ether}();
@@ -154,22 +149,23 @@ contract InsurancePoolTest is Test, ERC721Holder {
     function testFuzz_BuyPolicyPremium(uint256 coverage, uint256 duration) public {
         coverage = bound(coverage, 1 ether, 100 ether);
         duration = bound(duration, 1 days, 30 days);
-        
+
         uint256 premium = (coverage * pool.premiumRateBps()) / pool.BPS();
-        
+
         vm.assume(premium > 0);
-        
+
         vm.startPrank(user1);
         pool.deposit{value: 1000 ether}();
         vm.stopPrank();
 
         vm.startPrank(user2);
         vm.expectRevert(InsurancePool.WrongPremium.selector);
-        pool.buyPolicy{value: premium - 1 }(coverage, duration);
-        
+        pool.buyPolicy{value: premium - 1}(coverage, duration);
+
         pool.buyPolicy{value: premium}(coverage, duration);
         vm.stopPrank();
     }
+
     function testFuzz_Revert_BuyPolicy_ZeroPremium() public {
         vm.startPrank(user1);
         pool.deposit{value: 1000 ether}();
@@ -183,18 +179,20 @@ contract InsurancePoolTest is Test, ERC721Holder {
     function invariant_TotalAssets_AlwaysGTE_Locked() public view {
         assertGe(pool.totalAssets(), pool.totalLockedCoverage());
     }
+
     function invariant_SharesSupplyMatchesTotalAssets() public view {
         uint256 totalShares = pool.totalShares();
-        if(totalShares == 0 ) return;
-        
+        if (totalShares == 0) return;
+
         uint256 expectedAssets = (totalShares * pool.totalAssets()) / pool.totalShares();
 
         assertApproxEqAbs(pool.totalAssets(), expectedAssets, 1e9);
     }
+
     function test_Reentrancy_Withdrawal() public {
         vm.prank(attackerAddr);
         pool.deposit{value: 10 ether}();
-        
+
         uint256 attackerShares = pool.sharesOf(attackerAddr);
         assertGt(attackerShares, 0);
 
@@ -205,6 +203,7 @@ contract InsurancePoolTest is Test, ERC721Holder {
         uint256 balanceAfter = attackerAddr.balance;
         assertEq(balanceAfter, 100 ether - 10 ether);
     }
+
     function test_Warp_PolicyExpired_NoPayout() public {
         vm.startPrank(user1);
         pool.deposit{value: 500 ether}();
@@ -228,6 +227,7 @@ contract InsurancePoolTest is Test, ERC721Holder {
 
         assertEq(user2.balance, 1000 ether - premium);
     }
+
     function testFuzz_PolicyExpired_NoPayouts(uint256 coverage, uint256 duration) public {
         coverage = bound(coverage, 1 ether, 100 ether);
         duration = bound(duration, 1 days, 30 days);
@@ -235,13 +235,13 @@ contract InsurancePoolTest is Test, ERC721Holder {
         vm.startPrank(user1);
         pool.deposit{value: 1000 ether}();
         vm.stopPrank();
-        
+
         uint256 premium = (coverage * pool.premiumRateBps()) / pool.BPS();
-        
+
         vm.startPrank(user2);
         pool.buyPolicy{value: premium}(coverage, duration);
         uint256[] memory policiesID = nft.policiesOfOwner(user2);
-        
+
         vm.warp(block.timestamp + duration + 1 days);
         vm.startPrank(owner);
         for (uint256 i = 0; i < policiesID.length; ++i) {
@@ -254,7 +254,7 @@ contract InsurancePoolTest is Test, ERC721Holder {
 
     function test_Oracle_Payout_onlyOwner(uint256 duration) public {
         duration = bound(duration, 1 days, 30 days);
-        
+
         vm.startPrank(user1);
         pool.deposit{value: 500 ether}();
         vm.stopPrank();
@@ -266,17 +266,16 @@ contract InsurancePoolTest is Test, ERC721Holder {
         pool.buyPolicy{value: premium}(coverage, duration);
         uint256[] memory policiesID = nft.policiesOfOwner(user2);
         vm.expectRevert();
-        for (uint256 i = 0; i < policiesID.length; ++i){
+        for (uint256 i = 0; i < policiesID.length; ++i) {
             pool.resolvePolicy(policiesID[i]);
         }
         vm.stopPrank();
 
         vm.startPrank(owner);
-        for (uint256 i = 0; i < policiesID.length; ++i){
+        for (uint256 i = 0; i < policiesID.length; ++i) {
             oracle.setEvent(policiesID[i], true);
             pool.resolvePolicy(policiesID[i]);
         }
         assertEq(user2.balance, 1000 ether - premium + coverage);
     }
-
 }
