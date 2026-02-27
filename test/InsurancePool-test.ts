@@ -959,7 +959,7 @@ describe("InsurancePool", function() {
                 })
             it("Owner can withdraw to target address ", async function() {
                 const withdrawAmount = ethers.parseEther("5");
-                await expect(treasury.withdrawal(user1.address, withdrawAmount)).to.not.be.rejected;
+                await expect(treasury.withdrawal(user1.address, withdrawAmount)).to.not.be.reverted;
                 await expect(treasury.withdrawal(user1.address, withdrawAmount))
                             .to.changeEtherBalances(
                                 [(await treasury.getAddress()), user1.address],
