@@ -5,7 +5,7 @@ A simple insurance pool built on Solidity with NFT-based policies and share-base
 [![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.30-black?logo=solidity)](https://docs.soliditylang.org/)
 [![Hardhat](https://img.shields.io/badge/Built%20with-Hardhat-orange)](https://hardhat.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests & Coverage](https://github.com/stepanovnikita95-tech/Solidity-Insurance-Pool/actions/workflows/test.yml/badge.svg)](https://github.com/stepanovnikita95-tech/Solidity-Insurance-Pool/actions)
+[![Tests & Coverage](https://github.com/stepanovnikita95-tech/Solidity-Insurance-Pool/actions/workflows/test.yml/badge.svg)](https://github.com/stepanovnikita95-tech/Solidity-Insurance-Pool/actions/workflows/test.yml)
 [![Coverage](https://codecov.io/gh/stepanovnikita95-tech/Solidity-Insurance-Pool/branch/main/graph/badge.svg)](https://codecov.io/gh/stepanovnikita95-tech/Solidity-Insurance-Pool)
 [![Foundry Tests](https://github.com/nikitastepanov/Solidity-Insurance-Pool/actions/workflows/forge-test.yml/badge.svg)](https://github.com/nikitastepanov/Solidity-Insurance-Pool/actions/workflows/forge-test.yml)
 
