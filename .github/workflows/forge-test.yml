@@ -16,9 +16,9 @@ jobs:
         uses: foundry-rs/foundry-toolchain@v1
 
       - name: Install dependencies
-        working-directory: ./insurance-pool-foundry   # ← указываем папку
+        working-directory: ./insurance-pool-foundry   
         run: forge install
 
       - name: Run Forge tests
-        working-directory: ./insurance-pool-foundry   # ← указываем папку
+        working-directory: ./insurance-pool-foundry   
         run: forge test -vvv
