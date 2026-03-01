@@ -7,6 +7,7 @@ A simple insurance pool built on Solidity with NFT-based policies and share-base
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests & Coverage](https://github.com/stepanovnikita95-tech/Solidity-Insurance-Pool/actions/workflows/test.yml/badge.svg)](https://github.com/stepanovnikita95-tech/Solidity-Insurance-Pool/actions)
 [![Coverage](https://codecov.io/gh/stepanovnikita95-tech/Solidity-Insurance-Pool/branch/main/graph/badge.svg)](https://codecov.io/gh/stepanovnikita95-tech/Solidity-Insurance-Pool)
+[![Foundry Test](https://github.com/stepanovnikita95-tech/Solidity-Insurance-Pool/actions/workflows/forge-test.yml/badge.svg)](https://github.com/stepanovnikita95-tech/Solidity-Insurance-Pool/actions)
 
 
 
@@ -50,7 +51,7 @@ A prototype decentralized insurance pool where:
   → Protection against reentrancy and emergency pause
 
 - Mian tests in one file and split for files for testing functions 
-  → >90% coverage of success paths, reverts, and edge cases
+  → >95% coverage of success paths, reverts, and edge cases
   → scripts for running tests separately
   → Reverts check tests for low-level calls
   → Foundry tests: unit, fuzzing, invariants, reentrancy simulation
